@@ -180,16 +180,16 @@ func NewEndpointChangeTracker(hostname string, makeEndpointInfo makeEndpointFunc
 // It returns true if items changed, otherwise return false. Will add/update/delete items of EndpointsChangeMap.
 // If removeSlice is true, slice will be removed, otherwise it will be added or updated.
 func (ect *EndpointChangeTracker) EndpointSliceUpdate(endpointSlice *discovery.EndpointSlice, removeSlice bool) bool {
-	if !supportedEndpointSliceAddressTypes.Has(string(endpointSlice.AddressType)) {
-		klog.V(4).InfoS("EndpointSlice address type not supported by kube-proxy", "addressType", endpointSlice.AddressType)
-		return false
-	}
-
 	// This should never happen
 	if endpointSlice == nil {
 		klog.ErrorS(nil, "Nil endpointSlice passed to EndpointSliceUpdate")
 		return false
 	}
+	
+	if !supportedEndpointSliceAddressTypes.Has(string(endpointSlice.AddressType)) {
+		klog.V(4).InfoS("EndpointSlice address type not supported by kube-proxy", "addressType", endpointSlice.AddressType)
+		return false
+	}	
 
 	namespacedName, _, err := endpointSliceCacheKeys(endpointSlice)
 	if err != nil {
